@@ -1,0 +1,5 @@
+epicsbase=3rdParty/EPICS/3.14.12/base
+msi=3rdParty/EPICS/3.14.12/extensions/msi/msi1-5
+boost=3rdParty/boost/boost-1.49.0
+log=3rdParty/log4cxx/log4cxx-0.10.0
+adbe=Code/Base/adbe/current
