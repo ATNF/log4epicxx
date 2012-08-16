@@ -39,7 +39,7 @@
 #include <epicsTypes.h>
 
 #include <log4cxx/logmanager.h>
-#include <adbe/Logging.h>
+#include "logCommon.h"
 
 using namespace askap;
 using namespace adbe;

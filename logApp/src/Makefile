@@ -7,13 +7,12 @@ include $(TOP)/configure/CONFIG
 
 #=============================
 USR_CXXFLAGS_DEFAULT += -fno-operator-names
-# Build the IOC application
-
+#Build the IOC application
 LIBRARY_IOC = logging
-# log.dbd will be created and installed
-DBD += logging.dbd
 
-# log.dbd will be mlog up from these files:
+# installed DBDs
+DBD += logging.dbd
+logging_DBD += base.dbd
 logging_DBD += logSubroutines.dbd
 
 # Add all the support libraries needed by this IOC
