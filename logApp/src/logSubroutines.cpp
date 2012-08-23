@@ -69,13 +69,7 @@ int logging_get_loggers(aSubRecord *asub)
         level = (*loggerIter)->getLevel();
         if (level) {
             level->toString(levelName);
-            levelNums[i] = level->toInt();
-            if(levelNums[i] == log4cxx::Level::OFF_INT) {
-               levelNums[i] = 60;
-            }
-            else {
-               levelNums[i] /= 1000;
-            }
+            levelNums[i] = level_ptr_to_num(level) + 1;
         }
         else {
             levelName = "";
@@ -100,10 +94,9 @@ int logging_set_log_levels(aSubRecord *asub)
 
     LOG_INFO("setting log levels...");
     for (int i=0; i < asub->noa; ++i) {
-        if (0 == strlen(loggerNames[i]) || 0 == levels[i]) {
+        if (0 == strlen(loggerNames[i]) || -1 == levels[i]) {
             continue;
         }
-        LOG_DEBUG("Trying to set %s to %d", loggerNames[i], levels[i]);
         log4cxx::LoggerPtr logger;
         if (0 == strcmp("root", loggerNames[i])) {
             logger = log4cxx::LogManager::getRootLogger();
@@ -111,12 +104,14 @@ int logging_set_log_levels(aSubRecord *asub)
             logger = log4cxx::LogManager::getLogger(loggerNames[i]);
         }
         if (logger) {
-            levels[i] *= 1000;
-            if(levels[i] > log4cxx::Level::FATAL_INT) {
-                levels[i] = log4cxx::Level::OFF_INT;
+            log4cxx::LevelPtr level(0);
+            std::string levelName("undefined");
+            if (levels[i]) {
+                level = level_num_to_ptr((AdbeLogLevel)(levels[i] - 1));
+                level->toString(levelName);
             }
-            LOG_DEBUG("setting logger %s to level %d", loggerNames[i], levels[i]);
-            logger->setLevel(log4cxx::Level::toLevel(levels[i]));
+            LOG_DEBUG("setting logger %s to level %s", loggerNames[i], levelName.c_str());
+            logger->setLevel(level);
         }
     }
     return 0;
