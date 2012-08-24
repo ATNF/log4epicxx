@@ -6,8 +6,7 @@ builder = Builder(pkgname='.', epicsbase='epicsbase')
 # Each support module this application depends must be added to builder
 # The builder will automatically add an entry in the auto-generated
 # RELEASE.<arch> file
-builder.add_support('boost')
-builder.add_support('log')
-builder.add_support('adbe')
+builder.add_support('l4cpp')
+builder.add_support('ioclog')
 
 builder.build()

@@ -16,13 +16,11 @@ logging_DBD += base.dbd
 logging_DBD += logSubroutines.dbd
 
 # Add all the support libraries needed by this IOC
-logging_LIBS += boost_system
-logging_LIBS += askap_adbe
 logging_LIBS += log4cxx
-askap_adbe_DIR = $(ADBE)/lib
-log4cxx_DIR = $(LOG)/lib
-boost_system_DIR = $(BOOST)/lib
-expat_DIR = $(EXPAT)/lib
+logging_LIBS += askap_ioclog
+
+log4cxx_DIR = $(L4CPP)/lib
+askap_ioclog_DIR = $(IOCLOG)/lib
 
 logging_SRCS += logSubroutines.cpp
 logging_LIBS += $(EPICS_BASE_IOC_LIBS)

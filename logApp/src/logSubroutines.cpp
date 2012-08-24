@@ -42,7 +42,7 @@
 #include "logCommon.h"
 
 using namespace askap;
-using namespace adbe;
+using namespace ioclog;
 
 CREATE_LOGGER(".AdeSubroutines");
 
@@ -107,7 +107,7 @@ int logging_set_log_levels(aSubRecord *asub)
             log4cxx::LevelPtr level(0);
             std::string levelName("undefined");
             if (levels[i]) {
-                level = level_num_to_ptr((AdbeLogLevel)(levels[i] - 1));
+                level = level_num_to_ptr((IocLogLevel)(levels[i] - 1));
                 level->toString(levelName);
             }
             LOG_DEBUG("setting logger %s to level %s", loggerNames[i], levelName.c_str());
