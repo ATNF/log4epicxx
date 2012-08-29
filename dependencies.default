@@ -2,3 +2,4 @@ epicsbase=3rdParty/EPICS/3.14.12/base
 msi=3rdParty/EPICS/3.14.12/extensions/msi/msi1-5
 l4cpp=3rdParty/log4cxx/log4cxx-0.10.0
 ioclog=Code/Base/ioclog/current
+epicsdb=Code/Components/EPICS/support/epicsdb/current

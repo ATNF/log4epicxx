@@ -4,6 +4,8 @@
 #! DBDEND
 
 
+# refresh list of loggers after short delay
+# to ensure all loggers initialised
 record(seq, "$(prefix)$(antid)$(ss)log:startupDelay") {
   field(DESC, "update loggers after delay")
   field(PINI, "YES")
@@ -12,6 +14,8 @@ record(seq, "$(prefix)$(antid)$(ss)log:startupDelay") {
   field(LNK1, "$(prefix)$(antid)$(ss)log:update.PROC")
 }
 
+# subroutine record used to set logging levels
+# processed on change of log:LoggerLevels
 record(aSub, "$(prefix)$(antid)$(ss)log:setLevels") {
   field(DESC, "update loggers with new levels")
   field(SNAM, "logging_set_log_levels")
@@ -24,6 +28,22 @@ record(aSub, "$(prefix)$(antid)$(ss)log:setLevels") {
   field(NOB, "50")
 }
 
+# list of logger names
+record(waveform, "$(prefix)$(antid)$(ss)log:loggerNames") {
+  field(DESC, "current loggers")
+  field(NELM, "50")
+  field(FTVL, "STRING")
+}
+
+
+# list of current logigng levels (as string) corresponding to list of names
+record(waveform, "$(prefix)$(antid)$(ss)log:loggerLevelNames") {
+  field(DESC, "current level name of active loggers")
+  field(FTVL, "STRING")
+  field(NELM, "50")
+}
+
+# list of current logging levels (as number) corresponding to list of names
 record(waveform, "$(prefix)$(antid)$(ss)log:loggerLevels") {
   field(DESC, "current level of active loggers")
   field(FTVL, "LONG")
@@ -31,18 +51,7 @@ record(waveform, "$(prefix)$(antid)$(ss)log:loggerLevels") {
   field(FLNK, "$(prefix)$(antid)$(ss)log:setLevels")
 }
 
-record(waveform, "$(prefix)$(antid)$(ss)log:loggerLevelNames") {
-  field(DESC, "current level name of active loggers")
-  field(FTVL, "STRING")
-  field(NELM, "50")
-}
-
-record(waveform, "$(prefix)$(antid)$(ss)log:loggerNames") {
-  field(DESC, "current loggers")
-  field(NELM, "50")
-  field(FTVL, "STRING")
-}
-
+# updates logger name & level lists records
 record(aSub, "$(prefix)$(antid)$(ss)log:update") {
   field(DESC, "gets active logger names and levels")
   field(SNAM, "logging_get_loggers")

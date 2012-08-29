@@ -44,7 +44,19 @@
 using namespace askap;
 using namespace ioclog;
 
-CREATE_LOGGER(".AdeSubroutines");
+CREATE_LOGGER(".subroutines");
+
+void init_ioc_logging()
+{
+    char *logConfig = getenv("IOC_LOG_CONFIG");
+
+    if (logConfig) {
+        log_init(getenv("IOC_LOG_CONFIG"));
+    }
+    else {
+        log_init("ioc.log_cfg");
+    }
+}
 
 int logging_get_loggers(aSubRecord *asub)
 {
