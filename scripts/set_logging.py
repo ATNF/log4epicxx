@@ -39,25 +39,17 @@ while retry < 5:
     pvLoggerNames = epics.PV(Prefix + "log:loggerNames")
     names = pvLoggerNames.get(timeout=5)
 
-    if len(names) != len(levels):
-        pvLevelNames.disconnect()
-        pvLevels.disconnect()
-        pvLoggerNames.disconnect()
-        print "bad PV connection, trying again.."
-        continue
-        #raise RuntimeError("bad PV %d %d" % (len(names), len(levels)))
+    if len(names) == len(levels) and len(names) == len(levelNames):
+        break
 
-    if len(names) != len(levelNames):
-        pvLevelNames.disconnect()
-        pvLevels.disconnect()
-        pvLoggerNames.disconnect()
-        print "bad PV connection, trying again.."
-        continue
-        #raise RuntimeError("bad PV %d %d" % (len(names), len(levelNames)))
+    retry += 1
+    pvLevelNames.disconnect()
+    pvLevels.disconnect()
+    pvLoggerNames.disconnect()
+    print "bad PV connection, trying again.."
+    continue
 
-    break
-
-if retry >= 5:
+if retry >= 10:
     raise RuntimeError("bad PV connection, giving up %d %d %d" % (len(names), len(levelNames), len(levels)))
 
 #print len(levels), len(levelNames), len(names)
