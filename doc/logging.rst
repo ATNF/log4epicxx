@@ -2,6 +2,7 @@ ASKAP EPICS Logging
 ===================
 
 .. _log4cxx: http://logging.apache.org/log4cxx/
+.. _Ganymede: http://ganymede.sourceforge.net/
 
 ASKAP EPICS logging makes use of log4cxx_ as a more configurable
 logging framework for adding log information to ASKAP EPICS IOCs
@@ -113,8 +114,21 @@ The deployed log configuration will create a log file in ``/askapdata/var/log/<i
 When running and IOC from the development environment, the IOC opens ``ioc.log_cfg`` from the current
 directory if IOC_LOG_CONFIG is not defined, see below for code snippet to put in iocMain
 
-Steps
------
+Log Viewers
+-----------
+
+Ganymede_ is a small Eclipse plugin that will work with CSS.  Follow the install instructions and add
+the following appender to your ioc.log_cfg
+
+::
+
+    log4j.appender.Ganymede=org.apache.log4j.net.SocketAppender
+    log4j.appender.Ganymede.remoteHost=<hostname>
+    log4j.appender.Ganymede.port=4445
+    log4j.appender.Ganymede.locationInfo=true
+
+Integration Steps
+-----------------
 
 replace bmf below with your IOC name
 
@@ -239,8 +253,8 @@ replace bmf below with your IOC name
         #only enable DEBUG for a single card
         log4j.lgger.askap.bmf.card01=DEBUG
 
-Logging ICE Appender
---------------------
+Integration Steps for LogArchiver ICE Appender
+----------------------------------------------
 
 #. dependencies
 
