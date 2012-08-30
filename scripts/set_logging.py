@@ -30,18 +30,35 @@ if len(sys.argv) > 2:
 if len(sys.argv) > 3:
     ChangeLevel = sys.argv[3]
 
-pvLevels = epics.PV(Prefix + "log:loggerLevels")
-levels = pvLevels.get(timeout=5)
-pvLevelNames = epics.PV(Prefix + "log:loggerLevelNames")
-levelNames = pvLevelNames.get(timeout=5)
-pvLoggerNames = epics.PV(Prefix + "log:loggerNames")
-names = pvLoggerNames.get(timeout=5)
+retry = 0
+while retry < 5:
+    pvLevels = epics.PV(Prefix + "log:loggerLevels")
+    levels = pvLevels.get(timeout=5)
+    pvLevelNames = epics.PV(Prefix + "log:loggerLevelNames")
+    levelNames = pvLevelNames.get(timeout=5)
+    pvLoggerNames = epics.PV(Prefix + "log:loggerNames")
+    names = pvLoggerNames.get(timeout=5)
 
-if len(names) != len(levels):
-    raise RuntimeError("bad PV %d %d" % (len(names), len(levels)))
+    if len(names) != len(levels):
+        pvLevelNames.disconnect()
+        pvLevels.disconnect()
+        pvLoggerNames.disconnect()
+        print "bad PV connection, trying again.."
+        continue
+        #raise RuntimeError("bad PV %d %d" % (len(names), len(levels)))
 
-if len(names) != len(levelNames):
-    raise RuntimeError("bad PV %d %d" % (len(names), len(levelNames)))
+    if len(names) != len(levelNames):
+        pvLevelNames.disconnect()
+        pvLevels.disconnect()
+        pvLoggerNames.disconnect()
+        print "bad PV connection, trying again.."
+        continue
+        #raise RuntimeError("bad PV %d %d" % (len(names), len(levelNames)))
+
+    break
+
+if retry >= 5:
+    raise RuntimeError("bad PV connection, giving up %d %d %d" % (len(names), len(levelNames), len(levels)))
 
 #print len(levels), len(levelNames), len(names)
 
@@ -50,7 +67,7 @@ if None is ChangeLogger:
     while cmd != 'quit':
         os.system('clear')
         show_loggers(names, levelNames)
-        cmd = raw_input('>')
+        cmd = raw_input('regex level\n>')
         (regex, level) = cmd.split(' ')
         update_logging(regex, level)
         levelNames = pvLevelNames.get(count=100, timeout=5)
