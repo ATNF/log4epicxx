@@ -1,10 +1,22 @@
 ASKAP EPICS Logging 
 ===================
 
+.. _log4cxx: http://logging.apache.org/log4cxx/
+
+ASKAP EPICS logging makes use of log4cxx_ as a more configurable
+logging framework for adding log information to ASKAP EPICS IOCs
+The major benefits are:
+
+* separates ASKAP driver logging from core EPICS logging
+* provides a rich set of tools for sending output to different
+  destinations and in different formats
+* good performance
+* configurable at runtime
+
 modules:
 
 Code/Base/ioclog
-  log4cxx wrapper
+  log4cxx_ wrapper
 
 Code/Base/EPICS/support/logging
   support for controlling logging levels at runtime
@@ -19,7 +31,7 @@ Logging API
 
 .. function:: CREATE_LOGGER(logName)
 
-    creates a logger instance called logName.  ASKAP_PACKAGE_NAME must be defined before
+    creates a logger instance called logName. ASKAP_PACKAGE_NAME must be defined before
     including ioclog/Logging.h
 
 .. function:: CREATE_IOC_LOGGER(logName)
@@ -104,6 +116,8 @@ directory if IOC_LOG_CONFIG is not defined, see below for code snippet to put in
 Steps
 -----
 
+replace bmf below with your IOC name
+
 #. add dependencies
 
     ::
@@ -134,11 +148,13 @@ Steps
         log4cxx_DIR = $(L4CPP)/lib
         askap_ioclog_DIR = $(IOCLOG)/lib
 
-#. add ASKAP_PACKAGE_NAME and logging includes to a common header
+#. include ASKAP_PACKAGE_NAME (automatically generated
+   from builder in iocname_version.h) before including
+   the logging, eg in a ioc common header file
 
     ::
 
-        #define ASKAP_PACKAGE_NAME "ioc.bmf" 
+        #include "bmf_version.h"
         #include "ioclog/Logging.h" 
 
 #. add log_init call to main
@@ -165,12 +181,28 @@ Steps
 
             if(argc>=2) {
                 iocsh(argv[argc - 1]);
+                epicsThreadSleep(0.2);
             }
             LOG_WARN("Starting Beamformer IOC");
             iocsh(NULL);
             epicsExit(0);
             return(0);
         }
+
+#. add logging.db to your IOC common database
+
+    ::
+
+        file logging.template
+        {
+            {prefix=ma, antid=01:, ss=bmf:}
+        }
+
+#. and a dependency to the Db makefile
+
+    ::
+    
+        bmf_DEPENDS = logging.db
 
 #. add an ioc.log_cfg file to files/ioc<app> dir (only used when running from dev environment)
 
@@ -268,4 +300,20 @@ levels of each logger at runtime see :doc:`records_common`
 Command Line Tool
 -----------------
 
-scripts/set_logging 
+A command line tools is provided to set logger levels at runtime::
+
+    scripts/set_logging <pv prefix>
+
+will run a console which lists available loggers.  A command prompt allows input
+to set logging levels.  The command syntax is::
+
+    regex level
+
+where:
+
+regex
+    a regular expression to match against a logger name
+
+level
+    a logging level, one of off, fatal, error, warn, info, debug or trace
+
