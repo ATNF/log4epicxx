@@ -3,6 +3,7 @@ ASKAP EPICS Logging
 
 .. _log4cxx: http://logging.apache.org/log4cxx/
 .. _Ganymede: http://ganymede.sourceforge.net/
+.. _log4j-viewer: http://code.google.com/p/log4j-viewer/
 
 ASKAP EPICS logging makes use of log4cxx_ as a more configurable
 logging framework for adding log information to ASKAP EPICS IOCs
@@ -117,15 +118,20 @@ directory if IOC_LOG_CONFIG is not defined, see below for code snippet to put in
 Log Viewers
 -----------
 
-Ganymede_ is a small Eclipse plugin that will work with CSS.  Follow the install instructions and add
-the following appender to your ioc.log_cfg
+There are some good GUI tools for viewing log4j logs.  log4j-viewer_ is an Eclipse plugin that can
+display logs via the SocketAppender.  It is a fork of the original plugin Ganymede_ (which hasn't
+been updated in a long time).  Follow the install instructions and add the following appender to
+your ioc.log_cfg
 
 ::
 
-    log4j.appender.Ganymede=org.apache.log4j.net.SocketAppender
-    log4j.appender.Ganymede.remoteHost=<hostname>
-    log4j.appender.Ganymede.port=4445
-    log4j.appender.Ganymede.locationInfo=true
+    log4j.rootLogger=DEBUG, file, stdout, CSS
+    ..
+    ..
+    log4j.appender.CSS=org.apache.log4j.net.SocketAppender
+    log4j.appender.CSS.remoteHost=<hostname>
+    log4j.appender.CSS.port=4445
+    log4j.appender.CSS.locationInfo=true
 
 Integration Steps
 -----------------
