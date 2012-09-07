@@ -129,5 +129,27 @@ int logging_set_log_levels(aSubRecord *asub)
     return 0;
 }
 
+// Routine to just change root level on-demand
+int logging_set_root_level(aSubRecord *asub)
+{
+    LogContext context("rec.%s", asub->name);
+    epicsInt32* levelNum = (epicsInt32 *)asub->a;
+
+    LOG_INFO("setting root logger level...");
+    log4cxx::LoggerPtr logger = log4cxx::LogManager::getRootLogger();
+    log4cxx::LevelPtr level(0);
+    std::string levelName("");
+    if (*levelNum > 0) {
+    	level = level_num_to_ptr((IocLogLevel)(*levelNum - 1));
+    	level->toString(levelName);
+    	LOG_DEBUG("setting root logger to level %s", levelName.c_str());
+    	logger->setLevel(level);
+    } else {
+    	LOG_DEBUG("using root logger level as per config file");
+    }
+    return 0;
+}
+
 epicsRegisterFunction(logging_get_loggers);
 epicsRegisterFunction(logging_set_log_levels);
+epicsRegisterFunction(logging_set_root_level);

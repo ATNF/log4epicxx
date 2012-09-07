@@ -1,4 +1,4 @@
-ASKAP EPICS Logging 
+ASKAP EPICS Logging
 ===================
 
 .. _log4cxx: http://logging.apache.org/log4cxx/
@@ -162,6 +162,7 @@ replace bmf below with your IOC name
     ::
 
         # logging
+        bmf_DBD += logging.dbd
         bmf_LIBS += log4cxx
         bmf_LIBS += askap_ioclog
         bmf_LIBS += logging
