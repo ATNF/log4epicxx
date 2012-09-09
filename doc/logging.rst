@@ -210,21 +210,13 @@ replace bmf below with your IOC name
             return(0);
         }
 
-#. add logging.db to your IOC common database
+#. add logging.db to your IOC common database via macro inclusion inside a .db or .template file. For example in drivesCommon.template
 
     ::
 
-        file logging.template
-        {
-            {prefix=ma, antid=01:, ss=bmf:}
-        }
-
-#. and a dependency to the Db makefile
-
-    ::
-    
-        bmf_DEPENDS = logging.db
-
+        substitute "prefix=\$(prefix), antid=\$(antid), ss=drives:"
+        include "logging.db"
+        
 #. add an ioc.log_cfg file to files/ioc<app> dir (only used when running from dev environment)
 
     ::
