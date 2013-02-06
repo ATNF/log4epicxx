@@ -66,7 +66,7 @@ int logging_get_loggers(aSubRecord *asub)
     epicsInt32* levelNums = (epicsInt32 *)asub->valc;
 
     log4cxx::LoggerList loggerList = log4cxx::LogManager::getCurrentLoggers();
-    loggerList.push_back(log4cxx::LogManager::getRootLogger());
+    loggerList.insert(loggerList.begin(), log4cxx::LogManager::getRootLogger());
     LOG_INFO("getting loggers, %d loggers available", loggerList.size());
     int i = 0;
     for(log4cxx::LoggerList::iterator loggerIter = loggerList.begin(); loggerIter != loggerList.end(); ++loggerIter, ++i)
@@ -120,10 +120,13 @@ int logging_set_log_levels(aSubRecord *asub)
             std::string levelName("undefined");
             if (levels[i]) {
                 level = level_num_to_ptr((IocLogLevel)(levels[i] - 1));
+                levelName.clear();
                 level->toString(levelName);
             }
-            LOG_DEBUG("setting logger %s to level %s", loggerNames[i], levelName.c_str());
-            logger->setLevel(level);
+            if ( logger != log4cxx::LogManager::getRootLogger()) {
+                LOG_DEBUG("setting logger %s to level %s", loggerNames[i], levelName.c_str());
+                logger->setLevel(level);
+            }
         }
     }
     return 0;

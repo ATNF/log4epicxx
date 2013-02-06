@@ -33,14 +33,23 @@ if len(sys.argv) > 3:
 retry = 0
 while retry < 5:
     pvLevels = epics.PV(Prefix + "log:loggerLevels")
-    levels = pvLevels.get(timeout=5)
+    levels = pvLevels.get(timeout=5, use_monitor=False)
+    #print [x for x in levels]
+    #print pvLevels.info
+    #print pvLevels.connected
+    #print pvLevels.count
+    #exit()
     pvLevelNames = epics.PV(Prefix + "log:loggerLevelNames")
-    levelNames = pvLevelNames.get(timeout=5)
+    levelNames = pvLevelNames.get(timeout=5, use_monitor=False)
     pvLoggerNames = epics.PV(Prefix + "log:loggerNames")
-    names = pvLoggerNames.get(timeout=5)
+    names = pvLoggerNames.get(timeout=5, use_monitor=False)
 
     if len(names) == len(levels) and len(names) == len(levelNames):
         break
+
+    if levels[0] == 0:
+        # root logger unset so problem with PV
+        raise RuntimeError('EPICS PV problem getting levels')
 
     retry += 1
     pvLevelNames.disconnect()
