@@ -17,10 +17,15 @@ logging_DBD += logSubroutines.dbd
 
 # Add all the support libraries needed by this IOC
 logging_LIBS += log4cxx
-logging_LIBS += askap_ioclog
-
 log4cxx_DIR = $(L4CPP)/lib
+
+ifdef IOCLOG
+logging_LIBS += askap_ioclog
 askap_ioclog_DIR = $(IOCLOG)/lib
+else
+USR_CPPFLAGS += -DSTANDALONE_BUILD
+logging_SRCS += Logging.cc
+endif
 
 logging_SRCS += logSubroutines.cpp
 logging_LIBS += $(EPICS_BASE_IOC_LIBS)
