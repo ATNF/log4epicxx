@@ -19,12 +19,13 @@ logging_DBD += logSubroutines.dbd
 logging_LIBS += log4cxx
 log4cxx_DIR = $(L4CPP)/lib
 
-ifeq ($(IOCLOG),)
+USR_CPPFLAGS += -DASKAP_PACKAGE_NAME=\"epics.logging\"
+
+ifneq ($(IOCLOG),)
 logging_LIBS += askap_ioclog
 askap_ioclog_DIR = $(IOCLOG)/lib
 else
 USR_CPPFLAGS += -DSTANDALONE_BUILD
-USR_CPPFLAGS += -DASKAP_PACKAGE_NAME=\"epics\"
 logging_SRCS += Logging.cc
 endif
 
