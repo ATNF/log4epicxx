@@ -15,8 +15,6 @@
 
 int main(int argc,char *argv[])
 {
-    askap::ioclog::log_init();
-
     if(argc>=2) {    
         iocsh(argv[1]);
         epicsThreadSleep(.2);

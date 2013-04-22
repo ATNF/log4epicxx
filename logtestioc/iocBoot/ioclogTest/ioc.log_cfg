@@ -6,7 +6,7 @@ log4j.rootLogger=DEBUG, file, stdout, CSS
 
 # log to file
 log4j.appender.file=org.apache.log4j.RollingFileAppender
-log4j.appender.file.File=ioc.log
+log4j.appender.file.File=${IOC_NAME}.log
 log4j.appender.file.MaxFileSize=10MB
 log4j.appender.file.MaxBackupIndex=3
 log4j.appender.file.layout=org.apache.log4j.PatternLayout

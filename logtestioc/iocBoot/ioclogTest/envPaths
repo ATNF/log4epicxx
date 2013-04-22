@@ -1,7 +1,0 @@
-epicsEnvSet("ARCH","linux-x86")
-epicsEnvSet("IOC","ioclogTest")
-epicsEnvSet("TOP","/home/user/src/epics/iocs/logtest")
-epicsEnvSet("MODULES","/home/user/src/epics/modules")
-epicsEnvSet("EPICS_BASE","/home/user/src/epics/base-3.14.12.3")
-epicsEnvSet("SNCSEQ","/home/user/src/epics/modules/seq-2.1.12")
-epicsEnvSet("LOGGING","/home/user/src/epics/modules/log4epicxx/install")

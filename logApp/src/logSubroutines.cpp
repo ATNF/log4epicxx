@@ -1,5 +1,5 @@
 ///
-/// @copyright (c) 2011 CSIRO
+/// @copyright (c) 2013 CSIRO
 /// Australia Telescope National Facility (ATNF)
 /// Commonwealth Scientific and Industrial Research Organisation (CSIRO)
 /// PO Box 76, Epping NSW 1710, Australia
@@ -34,6 +34,7 @@
 #include <dbAddr.h> 
 #include <dbAccessDefs.h>
 #include <registryFunction.h>
+#include <iocsh.h>
 #include <epicsExport.h>
 #include <errlog.h>
 #include <epicsTypes.h>
@@ -58,7 +59,7 @@ void init_ioc_logging()
     }
 }
 
-int logging_get_loggers(aSubRecord *asub)
+int log4epicxx_get_loggers(aSubRecord *asub)
 {
     LogContext context("rec.%s", asub->name);
     epicsOldString* loggers = (epicsOldString *)asub->vala;
@@ -97,7 +98,7 @@ int logging_get_loggers(aSubRecord *asub)
     return 0;
 }
 
-int logging_set_log_levels(aSubRecord *asub)
+int log4epicxx_set_log_levels(aSubRecord *asub)
 {
     LogContext context("rec.%s", asub->name);
     epicsOldString* loggerNames = (epicsOldString *)asub->a;
@@ -132,7 +133,7 @@ int logging_set_log_levels(aSubRecord *asub)
 }
 
 // Routine to just change root level on-demand
-int logging_set_root_level(aSubRecord *asub)
+int log4epicxx_set_root_level(aSubRecord *asub)
 {
     LogContext context("rec.%s", asub->name);
     epicsInt32* levelNum = (epicsInt32 *)asub->a;
@@ -152,6 +153,21 @@ int logging_set_root_level(aSubRecord *asub)
     return 0;
 }
 
-epicsRegisterFunction(logging_get_loggers);
-epicsRegisterFunction(logging_set_log_levels);
-epicsRegisterFunction(logging_set_root_level);
+static const iocshArg log_init_arg0 = { "filename",iocshArgString};
+static const iocshArg *const log_init_args[1] = {&log_init_arg0};
+static const iocshFuncDef log_init_func_def = {"log4epicxx_init", 1, log_init_args};
+static void iocsh_log_init(const iocshArgBuf *args)
+{
+    askap::ioclog::log_init(args[0].sval);
+}
+
+static int doRegister(void)
+{
+    iocshRegister(&log_init_func_def, iocsh_log_init);
+    return 1;
+}
+static int done = doRegister();
+
+epicsRegisterFunction(log4epicxx_get_loggers);
+epicsRegisterFunction(log4epicxx_set_log_levels);
+epicsRegisterFunction(log4epicxx_set_root_level);

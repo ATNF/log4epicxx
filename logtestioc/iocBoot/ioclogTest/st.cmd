@@ -1,9 +1,17 @@
 #!../../bin/linux-x86/logTest
+epicsEnvSet("ARCH","linux-x86")
+epicsEnvSet("IOC","ioclogTest")
+epicsEnvSet("TOP","/home/user/src/epics/iocs/logtest")
+epicsEnvSet("MODULES","/home/user/src/epics/base-3.14.12.3/../modules")
+epicsEnvSet("EPICS_BASE","/home/user/src/epics/base-3.14.12.3")
+epicsEnvSet("SNCSEQ","/home/user/src/epics/base-3.14.12.3/../modules/seq-2.1.12")
+epicsEnvSet("LOGGING","/home/user/src/epics/base-3.14.12.3/../modules/log4epicxx/install")
 
-## You may have to change logTest to something else
-## everywhere it appears in this file
+## define IOC name for log config
+epicsEnvSet("IOC_NAME", "logtesting")
 
-< envPaths
+## initialise log4epicxx
+log4epicxx_init()
 
 cd ${TOP}
 
