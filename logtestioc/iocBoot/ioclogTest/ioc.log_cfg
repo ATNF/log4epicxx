@@ -1,0 +1,30 @@
+# Set root logger level to DEBUG and add a couple of appenders
+log4j.rootLogger=DEBUG, file, stdout, CSS
+
+#enable logging to CSS via Ganymede log4j plugin
+#log4j.rootLogger=WARN, file, stdout, CSS
+
+# log to file
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.File=ioc.log
+log4j.appender.file.MaxFileSize=10MB
+log4j.appender.file.MaxBackupIndex=3
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=%d %-5p [%16t] %-20c %l - %m%n
+
+# log to stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+#log4j.appender.stdout.layout.ConversionPattern=%d %-5p [%16t] %-20c %x %l - %m%n
+log4j.appender.stdout.layout.ConversionPattern=%d %-5p %-20c %x %l - %m%n
+log4j.appender.stdout.Threshold=DEBUG
+
+# log to CSS (via log4j-viewer Eclipse plugin)
+log4j.appender.CSS=org.apache.log4j.net.SocketAppender
+log4j.appender.CSS.remoteHost=localhost
+log4j.appender.CSS.port=4445
+log4j.appender.CSS.locationInfo=true
+
+#define top level debugger
+log4j.logger.mysite.logTest.asubs=DEBUG
+log4j.logger.mysite.logTest.snc=DEBUG

@@ -1,0 +1,47 @@
+program sncExample
+double v;
+assign v to "{prefix}:aiExample";
+monitor v;
+
+%%#include "Logging.h"
+%%CREATE_LOGGER(".snc");
+
+ss ss1 {
+    state init {
+        entry {
+            LOG_PUSH_CONTEXT("state init");
+        }
+	    when (delay(10)) {
+	        LOG_DEBUG("sncExample: Startup delay over");
+	    } state low
+        exit {
+            LOG_POP_CONTEXT();
+        }
+    }
+    state low {
+        entry {
+            LOG_PUSH_CONTEXT("state low");
+        }
+
+        when (v > 5.0) {
+            LOG_INFO("sncExample: Changing to high");
+        } state high
+
+        exit {
+            LOG_POP_CONTEXT();
+        }
+    }
+    state high {
+        entry {
+            LOG_PUSH_CONTEXT("state high");
+        }
+
+        when (v <= 5.0) {
+            LOG_INFO("sncExample: Changing to low");
+        } state low
+
+        exit {
+            LOG_POP_CONTEXT();
+        }
+    }
+}
