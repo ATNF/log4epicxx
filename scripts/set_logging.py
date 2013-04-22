@@ -26,6 +26,11 @@ import epics
 import re
 import time
 
+Levels = ['unset', 'off', 'fatal', 'error', 'warn', 'info', 'debug', 'trace']
+LevelMap = { Levels[x] : x for x in xrange(0, len(Levels)) }
+ChangeLogger = None
+NewLevel = None
+
 def show_loggers(names, levels):
     for x, name in enumerate(names):
         if len(name):
@@ -39,66 +44,41 @@ def update_logging(regex, level):
 
     pvLevels.put(levels, wait=True)
 
-LevelMap = {'unset' : 0, 'off' : 1, 'fatal' : 2, 'error' : 3, 'warn' : 4, 'info' : 5, 'debug' : 6, 'trace' : 7}
-ChangeLogger = None
-ChangeLevel = None
-
+# get parameters
 Prefix = sys.argv[1]
-
 if len(sys.argv) > 2:
     ChangeLogger = sys.argv[2]
 
 if len(sys.argv) > 3:
-    ChangeLevel = sys.argv[3]
+    NewLevel = sys.argv[3]
 
-retry = 0
-while retry < 5:
-    pvLevels = epics.PV(Prefix + "log:loggerLevels")
-    levels = pvLevels.get(timeout=5, use_monitor=False)
-    #print [x for x in levels]
-    #print pvLevels.info
-    #print pvLevels.connected
-    #print pvLevels.count
-    #exit()
-    pvLevelNames = epics.PV(Prefix + "log:loggerLevelNames")
-    levelNames = pvLevelNames.get(timeout=5, use_monitor=False)
-    pvLoggerNames = epics.PV(Prefix + "log:loggerNames")
-    names = pvLoggerNames.get(timeout=5, use_monitor=False)
+# read epics logging PVs
+pvLevels = epics.PV(Prefix + ":loggerLevels")
+pvLevelNames = epics.PV(Prefix + ":loggerLevelNames")
+pvLoggerNames = epics.PV(Prefix + ":loggerNames")
+levels = pvLevels.get(timeout=5, use_monitor=False)
+levelNames = pvLevelNames.get(timeout=5, use_monitor=False)
+names = pvLoggerNames.get(timeout=5, use_monitor=False)
 
-    if len(names) == len(levels) and len(names) == len(levelNames):
-        break
+if ChangeLogger is not None:
+    # update logger level directly
+    if None is NewLevel:
+        NewLevel = 'unset'
+    update_logging(ChangeLogger, NewLevel)
+    levelNames = pvLevelNames.get(count=100, timeout=5)
+    show_loggers(names, levelNames)
 
-    if levels[0] == 0:
-        # root logger unset so problem with PV
-        raise RuntimeError('EPICS PV problem getting levels')
-
-    retry += 1
-    pvLevelNames.disconnect()
-    pvLevels.disconnect()
-    pvLoggerNames.disconnect()
-    print "bad PV connection, trying again.."
-    continue
-
-if retry >= 10:
-    raise RuntimeError("bad PV connection, giving up %d %d %d" % (len(names), len(levelNames), len(levels)))
-
-#print len(levels), len(levelNames), len(names)
-
-if None is ChangeLogger:
+else:
+    # display a menu
     cmd = ''
     while cmd != 'quit':
         os.system('clear')
         show_loggers(names, levelNames)
-        cmd = raw_input('regex level\n>')
-        (regex, level) = cmd.split(' ')
+        cmd = raw_input('regex level (%s)\n>' % ','.join(Levels))
+        try:
+            (regex, level) = cmd.split(' ')
+        except ValueError:
+            continue
+            
         update_logging(regex, level)
         levelNames = pvLevelNames.get(count=100, timeout=5)
-
-    exit()
-
-if None is ChangeLevel:
-    ChangeLevel = 'unset'
-
-update_logging(ChangeLogger, ChangeLevel)
-levelNames = pvLevelNames.get(count=100, timeout=5)
-show_loggers(names, levelNames)

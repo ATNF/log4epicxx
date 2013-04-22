@@ -101,11 +101,10 @@ int logging_set_log_levels(aSubRecord *asub)
 {
     LogContext context("rec.%s", asub->name);
     epicsOldString* loggerNames = (epicsOldString *)asub->a;
-    epicsOldString* levelNames = (epicsOldString *)asub->b;
     epicsInt32* levels = (epicsInt32 *)asub->b;
 
     LOG_INFO("setting log levels...");
-    for (int i=0; i < asub->noa; ++i) {
+    for (unsigned int i=0; i < asub->noa; ++i) {
         if (0 == strlen(loggerNames[i]) || -1 == levels[i]) {
             continue;
         }
@@ -123,7 +122,7 @@ int logging_set_log_levels(aSubRecord *asub)
                 levelName.clear();
                 level->toString(levelName);
             }
-            if ( logger != log4cxx::LogManager::getRootLogger()) {
+            if (levels[i] || logger != log4cxx::LogManager::getRootLogger()) {
                 LOG_DEBUG("setting logger %s to level %s", loggerNames[i], levelName.c_str());
                 logger->setLevel(level);
             }

@@ -7,6 +7,7 @@ include $(TOP)/configure/CONFIG
 
 #=============================
 USR_CXXFLAGS_DEFAULT += -fno-operator-names
+USR_CPPFLAGS += -DPACKAGE_NAME=\"log4epicxx\"
 #Build the IOC application
 LIBRARY_IOC = logging
 
@@ -19,14 +20,13 @@ logging_DBD += logSubroutines.dbd
 logging_LIBS += log4cxx
 log4cxx_DIR = $(L4CPP)/lib
 
-USR_CPPFLAGS += -DASKAP_PACKAGE_NAME=\"epics.logging\"
-
 ifneq ($(IOCLOG),)
 logging_LIBS += askap_ioclog
 askap_ioclog_DIR = $(IOCLOG)/lib
 else
 USR_CPPFLAGS += -DSTANDALONE_BUILD
 logging_SRCS += Logging.cc
+INC += Logging.h
 endif
 
 logging_SRCS += logSubroutines.cpp
