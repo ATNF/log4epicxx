@@ -3,8 +3,10 @@ double v;
 assign v to "{prefix}:aiExample";
 monitor v;
 
+/* log4epicxx */
 %%#include "Logging.h"
 %%CREATE_LOGGER(".snc");
+/* log4epicxx */
 
 ss ss1 {
     state init {

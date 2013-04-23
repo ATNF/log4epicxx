@@ -8,6 +8,7 @@ Contents:
 
    logging.rst
    records.rst
+   askap.rst
 
 Indices and tables
 ==================

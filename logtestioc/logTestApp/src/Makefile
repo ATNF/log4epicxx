@@ -48,6 +48,7 @@ USR_CPPFLAGS += -DLOGGER_PREFIX=\"mysite.\"
 USR_CPPFLAGS += -DPACKAGE_NAME=\"logTest\"
 logTest_LIBS += logging
 logTest_DBD += logging.dbd
+# log4epicxx
 
 # NOTE: To build SNL programs, SNCSEQ must be defined
 # in the <top>/configure/RELEASE file
