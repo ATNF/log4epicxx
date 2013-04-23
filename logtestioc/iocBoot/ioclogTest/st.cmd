@@ -8,7 +8,7 @@ cd ${TOP}
 # define IOC name for log config filename
 # environment variables can be passed to
 # log config file this way
-epicsEnvSet("IOC_NAME", "logtestioc")
+epicsEnvSet("IOC_LOG_FILENAME", "${TOP}/iocBoot/ioclogTest/logtestioc.log")
 
 # set log config file location
 # omitting this will try to load ioc.log_cfg from
