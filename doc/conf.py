@@ -1,7 +1,7 @@
 # DO THIS FIRST to set project name !!!
 import askapdev.sphinx
 # CAN NOT contain spaces!
-askapdev.sphinx.project = u'askap.epics.logging'
+askapdev.sphinx.project = u'log4epicxx'
 
 from askapdev.sphinx.conf import *
 

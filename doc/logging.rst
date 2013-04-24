@@ -1,9 +1,9 @@
-LOG4EPICXX
-==========
-
 .. _log4cxx: http://logging.apache.org/log4cxx/
 .. _Ganymede: http://ganymede.sourceforge.net/
 .. _log4j-viewer: http://code.google.com/p/log4j-viewer/
+
+Introduction
+------------
 
 log4epicxx is a logging framework for EPICS based on log4cxx_
 The major benefits over existing EPICS logging are:

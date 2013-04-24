@@ -1,5 +1,5 @@
-EPICS Record Interface for IOC Logging Control
-==============================================
+LOG4EPICXX - Logging Framework for EPICS
+========================================
 
 Contents:
 
