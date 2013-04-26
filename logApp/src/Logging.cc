@@ -35,6 +35,7 @@
 #include <log4cxx/level.h>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/xml/domconfigurator.h>
 #include <log4cxx/patternlayout.h>
 #include <log4cxx/consoleappender.h>
 #ifndef STANDALONE_BUILD
@@ -42,12 +43,11 @@
 #endif
 #include "Logging.h"
 
-#define LOG_CONFIG_FILE "log.cfg"
-
 CREATE_LOGGER(".init");
 
 using namespace log4cxx;
 using namespace log4cxx::helpers;
+using namespace log4cxx::xml;
 using namespace askap;
 using namespace ioclog;
 
@@ -81,56 +81,34 @@ LogContext::~LogContext()
     log4cxx::NDC::pop();
 }
 
-static std::string get_log_config(int argc, char *argv[])
-{
-    static struct option options[] = 
-    {
-        {"log-config", required_argument, 0, 'l'}
-    };
-    std::string logCfgFile = "askap.log_cfg";
-
-    if (getenv("IOC_LOG_CONFIG")) {
-        logCfgFile = getenv("IOC_LOG_CONFIG");
-    }
-
-    while (1) {
-        const int c = getopt_long(argc, argv, "l:", options, 0);
-        if (c == 'l') {
-            if (optarg) {
-                logCfgFile = optarg;
-            }
-            break;
-        } else if (c == -1) {
-            break;
-        }
-    }
-
-    return logCfgFile;
-}
-
-int askap::ioclog::log_init(int argc, char *argv[])
-{
-    std::string logCfgFile = get_log_config(argc, argv);
-    return log_init(logCfgFile.c_str());
-}
-
-int askap::ioclog::log_init(const char *configFile)
+int askap::ioclog::log_init(const char *cfgParam)
 {
     int result = 0;
+    std::string cfgFile;
 
     if (logInitDone) {
         return result;
     }
 
+    if (NULL != cfgParam) {
+        cfgFile = cfgParam;
+    }
+    if (0 == cfgFile.size()) {
+        cfgFile = "ioc.log_cfg";
+        if (getenv("IOC_LOG_CONFIG")) {
+            cfgFile = getenv("IOC_LOG_CONFIG");
+        }
+    }
+
     try
     {
-        if (std::ifstream(configFile)) {
-            PropertyConfigurator::configure(configFile);
-            LOG_INFO("logging configured with %s", configFile);
-        }
-        else if (std::ifstream(LOG_CONFIG_FILE)) {
-            PropertyConfigurator::configure(LOG_CONFIG_FILE);
-            LOG_INFO("logging configured with %s", LOG_CONFIG_FILE);
+        if (cfgFile.substr(cfgFile.find_last_of(".") + 1) == "xml") {
+	        DOMConfigurator::configure(cfgFile.c_str());
+	        LOG_INFO("logging configured with %s", cfgFile.c_str());	  
+	    }
+        else if (std::ifstream(cfgFile.c_str())) {
+            PropertyConfigurator::configure(cfgFile.c_str());
+            LOG_INFO("logging configured with %s", cfgFile.c_str());
         }
         else {
             //PatternLayout* layout = new PatternLayout(">>>%l<<< \%-5p [\%t]: \%m\%n");
@@ -138,7 +116,7 @@ int askap::ioclog::log_init(const char *configFile)
             ConsoleAppender* appender = new ConsoleAppender(layout);
             BasicConfigurator::configure(appender);
             set_log_level(LOG_LEVEL_INFO);
-            LOG_INFO("config file %s not found, loading default config", configFile);
+            LOG_INFO("config file %s not found, loading default config", cfgFile.c_str());
         }
         logInitDone = true;
     }

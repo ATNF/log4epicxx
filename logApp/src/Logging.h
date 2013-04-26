@@ -29,19 +29,24 @@
 #ifndef __IOC_LOGGING_H__
 #define __IOC_LOGGING_H__
 
-#ifndef LOGGER_PREFIX
-#define LOGGER_PREFIX "askap."
-#else
-#define LOGGER_PREFIX ""
-#endif
-
 #ifdef __cplusplus
 namespace askap {
 namespace ioclog {
 #endif
 
-#ifndef ASKAP_PACKAGE_NAME
-#error ASKAP_PACKAGE_NAME not defined
+#ifdef ASKAP_PACKAGE_NAME
+#define PACKAGE_NAME ASKAP_PACKAGE_NAME
+#ifndef LOGGER_PREFIX
+#define LOGGER_PREFIX "askap."
+#endif
+#else
+#ifndef LOGGER_PREFIX
+#define LOGGER_PREFIX "epics."
+#endif
+#endif
+
+#ifndef PACKAGE_NAME
+#define PACKAGE_NAME "unknown"
 #endif
 
 typedef enum {
@@ -57,7 +62,7 @@ typedef enum {
 
 typedef struct _IOC_LOG
 {
-  int (*configure)(int argc, char *argv[]);
+  int (*configure)(const char *logConfig);
 
   int (*isLevelEnabled)(IocLogLevel level, const char*logger);
 
@@ -89,12 +94,12 @@ inline std::string loggerName(const std::string& inname)
 const std::string name(LOGGER_PREFIX);
 if (inname.length() > 0) {
   if (inname[0] == '.') {
-    return (name + std::string(ASKAP_PACKAGE_NAME) + inname);
+    return (name + std::string(PACKAGE_NAME) + inname);
   } else {
     return (name + inname);
   }
 }
-return (name + std::string(ASKAP_PACKAGE_NAME));
+return (name + std::string(PACKAGE_NAME));
 }
 
 #define CREATE_IOC_LOGGER(logName) log4cxx::Logger::getLogger(askap::ioclog::loggerName(logName))
@@ -142,22 +147,13 @@ public:
 };
 
 /// @brief initialise logging
-//
-/// will process command line options looking
-/// for the --log-config option
 ///
-/// @param argc number of args from main()
-/// @paarm argv array of arguments from main()
-///
-int log_init(int argc, char *argv[]);
-
-/// @brief initialise logging
-///
-/// initialise logging with a filename, suitable
-/// for use with an evnironment variable
+/// initialise logging
 /// 
-/// @param cfgFilename full path to config file
-int log_init(const char* cfgFilename=NULL);
+/// @param cfgFile full path to config file.  If omitted or NULL
+///                then environment variable IOC_LOG_CONFIG is
+///                used or finally ioc.log_cfg from the current directory
+int log_init(const char* cfgFile=NULL);
 
 /// @brief set log level of root logger
 ///
@@ -202,8 +198,8 @@ void log_pop_context();
 }
 #else //cplusplus
 
-#define CREATE_LOGGER(name)     static char *LOGGER = LOGGER_PREFIX ASKAP_PACKAGE_NAME name
-#define CREATE_NAMED_LOGGER(logger, name)     static char *logger = LOGGER_PREFIX ASKAP_PACKAGE_NAME name
+#define CREATE_LOGGER(name)     static char *LOGGER = LOGGER_PREFIX PACKAGE_NAME name
+#define CREATE_NAMED_LOGGER(logger, name)     static char *logger = LOGGER_PREFIX PACKAGE_NAME name
 
 extern IOC_LOG *IocLog;
 
